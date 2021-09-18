@@ -1,2 +1,2 @@
-## GoHTTTP
-Http Server writing with a NET TCP dial server.
+# GoNet
+Network tools with GoLang.
