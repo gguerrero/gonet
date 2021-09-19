@@ -12,8 +12,10 @@ import (
 	"github.com/gguerrero/gonet/netplexer/response"
 )
 
+// port defines the TCP port where the server is running.
 type port uint16
 
+// Server defines the IP and the port where the TCP server will run
 type Server struct {
 	Address net.IP
 	Port    port
@@ -21,16 +23,20 @@ type Server struct {
 
 const (
 	network = "tcp"
+	// TCP requests default timeout.
 	timeout = time.Second * 5
 )
 
-func (s *Server) ipAddress() string {
+// The server name as IP and Port
+func (s *Server) String() string {
 	return fmt.Sprintf("%s:%d", s.Address, s.Port)
 }
 
+// Listen, accept and handles TCP connections.
+// HTTP protocol request are expected as input.
 func (s *Server) Serve() {
-	log.Printf("Netplexer listening at %s\n", s.ipAddress())
-	li, err := net.Listen(network, s.ipAddress())
+	log.Printf("Netplexer listening at %s\n", s.String())
+	li, err := net.Listen(network, s.String())
 	if err != nil {
 		log.Fatal(err)
 	}

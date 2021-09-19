@@ -10,17 +10,19 @@ import (
 	"strings"
 )
 
-type httpParser struct {
+type HttpParser struct {
 	buff *bufio.Reader
 }
 
-func NewHttpParser(r io.Reader) *httpParser {
-	return &httpParser{
+func NewHttpParser(r io.Reader) *HttpParser {
+	return &HttpParser{
 		buff: bufio.NewReader(r),
 	}
 }
 
-func (parser *httpParser) Parse(req *HttpRequest) error {
+// With a basic HttpParser object as a reciever, Parse will parse from the io.Reader and return
+// HttpRequest as a result.
+func (parser *HttpParser) Parse(req *HttpRequest) error {
 	parser.parseRequestLine(req)
 	parser.parseRequestHeaders(req)
 	parser.parseRequestContent(req)
@@ -29,7 +31,7 @@ func (parser *httpParser) Parse(req *HttpRequest) error {
 	return nil
 }
 
-func (parser *httpParser) parseRequestLine(req *HttpRequest) error {
+func (parser *HttpParser) parseRequestLine(req *HttpRequest) error {
 	ln, _, err := parser.buff.ReadLine()
 	if err != nil {
 		return err
@@ -48,7 +50,7 @@ func (parser *httpParser) parseRequestLine(req *HttpRequest) error {
 	return nil
 }
 
-func (parser *httpParser) parseRequestHeaders(req *HttpRequest) error {
+func (parser *HttpParser) parseRequestHeaders(req *HttpRequest) error {
 	req.Headers = make(url.Values)
 
 	for {
@@ -75,7 +77,7 @@ func (parser *httpParser) parseRequestHeaders(req *HttpRequest) error {
 	return nil
 }
 
-func (parser *httpParser) parseRequestContent(req *HttpRequest) error {
+func (parser *HttpParser) parseRequestContent(req *HttpRequest) error {
 	if contentLen := req.ContentLength; contentLen != 0 {
 		contentBuff := make([]byte, contentLen)
 		_, err := io.ReadFull(parser.buff, contentBuff)
@@ -90,7 +92,7 @@ func (parser *httpParser) parseRequestContent(req *HttpRequest) error {
 	return nil
 }
 
-func (parser *httpParser) parseParams(req *HttpRequest) error {
+func (parser *HttpParser) parseParams(req *HttpRequest) error {
 	switch req.Method {
 	case "GET":
 		url, err := url.ParseRequestURI(req.Path)

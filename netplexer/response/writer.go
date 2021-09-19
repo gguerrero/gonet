@@ -26,6 +26,7 @@ type httpResponseWriter struct {
 	writer io.Writer
 }
 
+// Returns an httpResonseWriter where you can write the response in...
 func NewhttpResponseWriter(w io.Writer) *httpResponseWriter {
 	return &httpResponseWriter{
 		writer: w,
