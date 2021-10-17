@@ -1,52 +1,32 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"sync"
 	"time"
 )
 
-const (
-	defaultMaxRoutines = 1000
-)
-
-type options struct {
-	uri         string
-	maxRoutines int
-}
+var uriFlag = flag.String("url", "", "URL where the stress test is going to point, using GET")
+var maxRoutinesFlag = flag.Int("max", 10, "max concurrent requests run at a time")
 
 func init() {
 	log.SetOutput(os.Stdout)
 }
 
 func main() {
-	var opts = parseOpts()
 	var wg sync.WaitGroup
 
-	for i := 0; i < opts.maxRoutines; i++ {
+	flag.Parse()
+
+	for i := 0; i < *maxRoutinesFlag; i++ {
 		wg.Add(1)
-		go timeRequest(opts.uri, i+1, &wg)
+		go timeRequest(*uriFlag, i+1, &wg)
 	}
 
 	wg.Wait()
-}
-
-func parseOpts() *options {
-	args := os.Args[1:]
-	opts := &options{
-		uri:         args[0],
-		maxRoutines: defaultMaxRoutines,
-	}
-
-	maxRoutines, _ := strconv.Atoi(args[1])
-	if maxRoutines > 0 {
-		opts.maxRoutines = maxRoutines
-	}
-
-	return opts
 }
 
 func timeRequest(uri string, n int, wg *sync.WaitGroup) {
@@ -58,6 +38,7 @@ func timeRequest(uri string, n int, wg *sync.WaitGroup) {
 	if err != nil {
 		log.Println(err)
 	}
+	defer r.Body.Close()
 
 	reqEndTs := time.Now()
 
