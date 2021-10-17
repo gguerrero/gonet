@@ -1,3 +1,4 @@
 .DS_Store
 
-netstress/netstress
+cmd/netstress/netstress
+cmd/netplexer/netplexer

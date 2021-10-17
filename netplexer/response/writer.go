@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"os"
+	"path/filepath"
 
 	"github.com/gguerrero/gonet/netplexer/request"
 )
@@ -19,7 +21,13 @@ var statusText = map[int]string{
 var tpl *template.Template
 
 func init() {
-	tpl = template.Must(template.ParseFiles("netplexer/templates/report.gohtml"))
+	dir, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	tplPath := filepath.Join(dir, "../../netplexer/templates/report.gohtml")
+	tpl = template.Must(template.ParseFiles(tplPath))
 }
 
 type httpResponseWriter struct {
