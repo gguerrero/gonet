@@ -23,10 +23,27 @@ func NewHttpParser(r io.Reader) *HttpParser {
 // With a basic HttpParser object as a reciever, Parse will parse from the io.Reader and return
 // HttpRequest as a result.
 func (parser *HttpParser) Parse(req *HttpRequest) error {
-	parser.parseRequestLine(req)
-	parser.parseRequestHeaders(req)
-	parser.parseRequestContent(req)
-	parser.parseParams(req)
+	var err error
+
+	err = parser.parseRequestLine(req)
+	if err != nil {
+		return err
+	}
+
+	err = parser.parseRequestHeaders(req)
+	if err != nil {
+		return err
+	}
+
+	err = parser.parseRequestContent(req)
+	if err != nil {
+		return err
+	}
+
+	err = parser.parseParams(req)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
